@@ -47,6 +47,11 @@ router.get('/:id', async (req, res) => {
         }
       ]
     });
+
+    if (!oneproductData) {
+      res.status(404).json({ message: 'Product not found.'});
+    }
+
     res.status(200).json(oneproductData);
   } catch (err) {
     console.log(err);
@@ -137,23 +142,24 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-  // delete one product by its `id` value
-  Product.destroy({
-    where: {
-      id: req.params.id
+  // delete a product by its `id` value
+  try {
+    const deleteProduct = await Product.destroy({
+      where: {
+        id: req.params.id
+      }
+    });
+
+    if (!deleteProduct) {
+      res.status(404).json({ message: 'Product not found.'});
     }
-  })
-  .then((data) => {
-    if (!data) {
-      res.status(404).json({message: 'Product not found'});
-      return;
-    }
-    res.json(data);
-  })
-  .catch(err => {
+
+    res.status(200).json(deleteProduct)
+  } catch (err) {
     console.log(err);
-    res.status(500).json(err);
-  });
+    res.status(500).json(err);  
+  }
 });
+
 
 module.exports = router;
